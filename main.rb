@@ -125,7 +125,7 @@ post '/game/player/hit' do
   session[:player_money] += session[:money_bet].to_i*2
   elsif calculate_total(session[:player_cards])> 21
     @error = "#{session[:player_name]} are busted."
-     @show_hit_or_stay_bottons = false
+     @show_hit_or_stay_bottons = falsex
   end
   erb :game
 end
