@@ -56,7 +56,7 @@ end
 
 get '/' do
   if session[:player_name]
-    redirect "/bet_new"
+  redirect'/bet'
   else
     redirect '/new_player'
   end 
@@ -72,7 +72,8 @@ post "/new_player"do
     halt erb :new_player
   end
   session[:player_name] = params[:player_name]
-  redirect'/bet_new'
+  session[:player_money]= 1000
+  redirect'/bet'
 end
 
 get '/bet_new' do
@@ -86,11 +87,17 @@ end
 
 post '/bet' do
   session[:money_bet] = params[:money_bet].to_i
-  session[:player_money] -= session[:money_bet]
-  if params[:money_bet].to_i == 0
-    @error = "A integer is required"
+
+  if params[:money_bet].to_i == 0 || params[:money_bet].to_i < 0
+    @error = "A non-zero positive amount is required"
     halt erb :bet
   end
+  if params[:money_bet].to_i > session[:player_money]
+    @error = "#{session[:player_name]},Come on, face to the truth. You only have $#{session[:player_money]}."
+    halt erb :bet
+  end
+
+  session[:player_money] -= session[:money_bet]
   redirect '/game'
 end
 
@@ -125,16 +132,16 @@ post '/game/player/hit' do
   session[:player_money] += session[:money_bet].to_i*2
   elsif calculate_total(session[:player_cards])> 21
     @error = "#{session[:player_name]} are busted."
-     @show_hit_or_stay_bottons = falsex
+     @show_hit_or_stay_bottons = false
   end
-  erb :game
+  erb :game, layout: false
 end
 
 post '/game/player/stay' do 
  @success = "#{session[:player_name]}, You have chosen to stay."
   @show_hit_or_stay_bottons = false
   @dealer_turn = true
- erb :game
+ erb :game, layout: false
 end
 
 post '/game/dealer/hit' do
@@ -144,11 +151,11 @@ post '/game/dealer/hit' do
   if  calculate_total(session[:dealer_cards])>calculate_total(session[:player_cards])&& calculate_total(session[:dealer_cards])>16
     @dealer_turn = false
     @error = "Dealer won!"
-    halt erb :game
+    halt erb :game, layout: false
   elsif calculate_total(session[:dealer_cards])==21
     @dealer_turn = false
     @error = "Dealer won!"
-    halt erb :game      
+    halt erb :game, layout: false      
   end
   redirect '/game/dealer/hit'
 end
@@ -173,6 +180,6 @@ get '/game/dealer/hit' do
     @dealer_turn=false
   end
 
-  erb :game
+  erb :game, layout: false
 end
 

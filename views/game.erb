@@ -1,15 +1,17 @@
+<div id='game'>
 <% if @error %>
 <strong>Play again?</strong>
 <a href="/bet"class= "btn btn-primiary">Yes</a>
 <a href="/game_over" class="btn btn-danger">No</a>
 <% end %>
 
+
 <h1>Blackjack!</h1>
 
 <p>Welcome <%= session[:player_name] %>.</p>
 <p>You have money:<%=session[:player_money]%>.</p>
 <p>You have bet:<%=session[:money_bet].to_i%></p>
-<div class='well'>
+<div class='well' id='dealer_area'>
   <h4>Dealer's cards:</h4>
         <% session[:dealer_cards].each do |card| puts card%>
           <% if @show_hit_or_stay_bottons && session[:dealer_cards].index(card) == 0%>
@@ -58,7 +60,7 @@ What would you like to do?
 <% end %>
 </p> 
 
-
+</div>
 
 
 
